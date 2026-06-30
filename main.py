@@ -39,12 +39,17 @@ def get_audio_url():
     if not video_id:
         return jsonify({'error': 'Video ID missing'}), 400
 
-    ydl_opts = {
-        'format': 'bestaudio/best',
+   ydl_opts = {
+        'format': 'bestaudio',  # Sirf bestaudio rakhein
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
-        'cookiefile': 'cookies.txt',  # <--- Yeh nayi line add karni hai
+        'cookiefile': 'cookies.txt',
     }
     
     try:
