@@ -32,7 +32,7 @@ def search_songs():
         print(f"Search Error: {e}")
         return jsonify([])
 
-# 2. Gaana play karne ke liye NAYA ROUTE (pytubefix bypass)
+# 2. Gaana play karne ke liye NAYA ROUTE (TV Client Bypass)
 @app.route('/play', methods=['GET'])
 def get_audio_url():
     video_id = request.args.get('id')
@@ -42,8 +42,8 @@ def get_audio_url():
     try:
         yt_url = f"https://www.youtube.com/watch?v={video_id}"
         
-        # Yahan hum client='ANDROID' use kar rahe hain taaki PO Token bypass ho jaye
-        yt = YouTube(yt_url, client='ANDROID') 
+        # 'TV' client sabse stable hai, yeh 400 Error aur PO Token dono bypass kar deta hai
+        yt = YouTube(yt_url, client='TV') 
         
         # Sirf best audio stream nikal rahe hain
         audio_stream = yt.streams.get_audio_only()
@@ -52,6 +52,10 @@ def get_audio_url():
             return jsonify({'url': audio_stream.url})
         else:
             return jsonify({'error': 'Audio stream nahi mila'}), 500
+
+    except Exception as e:
+        print(f"Play Error: {e}")
+        return jsonify({'error': 'Extraction failed'}), 500
 
     except Exception as e:
         print(f"Play Error: {e}")
