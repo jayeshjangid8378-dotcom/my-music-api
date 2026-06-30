@@ -39,17 +39,12 @@ def get_audio_url():
     if not video_id:
         return jsonify({'error': 'Video ID missing'}), 400
 
-    # yt-dlp ki upgraded settings
     ydl_opts = {
         'format': 'bestaudio/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android']
-            }
-        }
+        'cookiefile': 'cookies.txt',  # <--- Yeh nayi line add karni hai
     }
     
     try:
