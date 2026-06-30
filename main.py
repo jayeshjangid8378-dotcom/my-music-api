@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ytmusicapi import YTMusic
-from pytube import YouTube
+from pytubefix import YouTube
 
 app = Flask(__name__)
 CORS(app) 
@@ -32,7 +32,7 @@ def search_songs():
         print(f"Search Error: {e}")
         return jsonify([])
 
-# 2. Gaana play karne ke liye Pytube NAYA ROUTE
+# 2. Gaana play karne ke liye NAYA ROUTE (pytubefix bypass)
 @app.route('/play', methods=['GET'])
 def get_audio_url():
     video_id = request.args.get('id')
@@ -40,12 +40,13 @@ def get_audio_url():
         return jsonify({'error': 'Video ID missing'}), 400
 
     try:
-        # Pytube URL initialize kar rahe hain
         yt_url = f"https://www.youtube.com/watch?v={video_id}"
-        yt = YouTube(yt_url)
         
-        # Sirf audio stream dhoondh kar direct stream link nikal rahe hain
-        audio_stream = yt.streams.filter(only_audio=True).first()
+        # 'WEB' client use karne se bot-check block nahi hota
+        yt = YouTube(yt_url, client='WEB') 
+        
+        # Sirf best audio stream nikal rahe hain
+        audio_stream = yt.streams.get_audio_only()
         
         if audio_stream and audio_stream.url:
             return jsonify({'url': audio_stream.url})
