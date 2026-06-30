@@ -41,8 +41,13 @@ def get_audio_url():
 
     # yt-dlp ki settings taaki sirf best quality audio mile
     ydl_opts = {
-        'format': 'bestaudio/best',
+        'format': 'bestaudio',
+        'noplaylist': True,
         'quiet': True,
+        'no_warnings': True,
+        'nocheckcertificate': True,
+        'prefer_ffmpeg': False,
+        'extractor_args': {'youtube': {'player_client': ['android']}}, # Yeh line YouTube ko confuse karti hai ki request phone se aa rahi hai
     }
     
     try:
