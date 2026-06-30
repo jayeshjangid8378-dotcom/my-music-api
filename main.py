@@ -1,14 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ytmusicapi import YTMusic
-import yt_dlp
-import os 
+from pytube import YouTube
 
 app = Flask(__name__)
 CORS(app) 
 ytmusic = YTMusic()
 
-# 1. Gaane dhoondhne wala route (Pehle jaisa hi hai)
+# 1. Gaane dhoondhne wala route
 @app.route('/search', methods=['GET'])
 def search_songs():
     query = request.args.get('q')
@@ -32,41 +31,30 @@ def search_songs():
     except Exception as e:
         print(f"Search Error: {e}")
         return jsonify([])
-    
-# 2. Gaana play karne ke liye Audio URL nikalna
+
+# 2. Gaana play karne ke liye Pytube NAYA ROUTE
 @app.route('/play', methods=['GET'])
 def get_audio_url():
     video_id = request.args.get('id')
     if not video_id:
         return jsonify({'error': 'Video ID missing'}), 400
 
-    ydl_opts = {
-        'format': 'bestaudio',
-        'quiet': True,
-        'no_warnings': True,
-        'nocheckcertificate': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android']
-            }
-        }
-    }
-    
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
-            audio_url = info.get('url') or ''
-            
-            if audio_url:
-                return jsonify({'url': audio_url})
-            else:
-                return jsonify({'error': 'Format extraction failed'}), 500
+        # Pytube URL initialize kar rahe hain
+        yt_url = f"https://www.youtube.com/watch?v={video_id}"
+        yt = YouTube(yt_url)
+        
+        # Sirf audio stream dhoondh kar direct stream link nikal rahe hain
+        audio_stream = yt.streams.filter(only_audio=True).first()
+        
+        if audio_stream and audio_stream.url:
+            return jsonify({'url': audio_stream.url})
+        else:
+            return jsonify({'error': 'Audio stream nahi mila'}), 500
 
     except Exception as e:
         print(f"Play Error: {e}")
-        return jsonify({'error': 'Audio link nahi mila'}), 500
-    
-if __name__ == '__main__':
-    print("🔥 Upgraded Engine Start ho gaya! Running on http://127.0.0.1:5000")
+        return jsonify({'error': 'Extraction failed'}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
