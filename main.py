@@ -39,13 +39,8 @@ def get_audio_url():
     if not video_id:
         return jsonify({'error': 'Video ID missing'}), 400
 
-   ydl_opts = {
-        'format': 'bestaudio',  # Sirf bestaudio rakhein
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
+    ydl_opts = {
+        'format': 'bestaudio',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
