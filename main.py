@@ -40,29 +40,22 @@ def get_audio_url():
     if not video_id:
         return jsonify({'error': 'Video ID missing'}), 400
 
-    # Puraane sabhi complicated formats hata rahe hain
     ydl_opts = {
         'format': 'bestaudio',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android']
+            }
+        }
     }
-    
-    # Agar cookies file maujood hai, toh iska use karo
-    if os.path.exists('cookies.txt'):
-        ydl_opts['cookiefile'] = 'cookies.txt'
     
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
-            
-            # Agar direct url na mile, toh formats list me se dhoondho
             audio_url = info.get('url') or ''
-            if not audio_url and 'formats' in info:
-                for f in info['formats']:
-                    if f.get('acodec') != 'none' and f.get('vcodec') == 'none':
-                        audio_url = f.get('url', '')
-                        break
             
             if audio_url:
                 return jsonify({'url': audio_url})
