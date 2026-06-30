@@ -41,6 +41,10 @@ def get_audio_url():
 
     ydl_opts = {
         'format': 'bestaudio',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'm4a',
+        }],
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
