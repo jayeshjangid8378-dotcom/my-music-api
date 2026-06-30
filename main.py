@@ -42,8 +42,8 @@ def get_audio_url():
     try:
         yt_url = f"https://www.youtube.com/watch?v={video_id}"
         
-        # 'WEB' client use karne se bot-check block nahi hota
-        yt = YouTube(yt_url, client='WEB') 
+        # Yahan hum client='ANDROID' use kar rahe hain taaki PO Token bypass ho jaye
+        yt = YouTube(yt_url, client='ANDROID') 
         
         # Sirf best audio stream nikal rahe hain
         audio_stream = yt.streams.get_audio_only()
@@ -52,6 +52,10 @@ def get_audio_url():
             return jsonify({'url': audio_stream.url})
         else:
             return jsonify({'error': 'Audio stream nahi mila'}), 500
+
+    except Exception as e:
+        print(f"Play Error: {e}")
+        return jsonify({'error': 'Extraction failed'}), 500
 
     except Exception as e:
         print(f"Play Error: {e}")
